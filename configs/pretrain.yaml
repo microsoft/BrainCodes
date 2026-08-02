@@ -1,0 +1,78 @@
+tokenizer:
+  ckpt_path: null          # null -> $BIOCODEC_CKPT
+  sample_rate: 250
+  n_q: 6
+  q_bins: 256
+  causal: true
+  tokenize_micro_batch: 0
+
+data:
+  manifests:
+    - data/cache/R3/manifest.json
+    - data/cache/R4/manifest.json
+    - data/cache/R7/manifest.json
+    - data/cache/R8/manifest.json
+  batch_size: 32
+  n_channels: 64
+  segment_seconds: 30
+  num_workers: 4
+  val_frac: 0.2
+  lengths_sec: [2, 5, 10, 15, 20, 30]
+  length_weights: [1, 1, 1, 1, 1, 1]
+  codec_hop_samples: 12
+  randomize_channels:
+    min: 16
+    max: 64
+
+model:
+  d_model: 16
+  n_heads: 8
+  n_blocks: 3
+  n_layers_time: 2
+  n_layers_chan: 1
+  dropout: 0.1
+  backbone_width: 128
+  pool_factors: [2, 2]
+  skip_dropout: 0.2
+  inject_on_bottleneck: true
+  init_from_codebooks: true
+  coord_jitter: 0.05
+  grad_checkpoint: true
+  span_chan_lo: 0.10
+  span_chan_hi: 0.25
+  span_dur_lo: 0.2
+  span_dur_hi: 0.8
+  span_neighbor_frac: 0.125
+
+objective:
+  token_weight: 1.0
+  bands: [theta, alpha_low, alpha_high, beta_low, beta_high]
+  inject:
+    amp_min: 0.1
+    amp_max: 0.5
+    bandwidth: 2.0
+    dur_weight: 1.0
+    freq_weight: 1.0
+    dur_min_frac: 0.1
+    dur_max_frac: 0.5
+    loc_weight: 1.0
+    inject_frac: 0.4
+    region_frac_lo: 0.2
+    region_frac_hi: 0.4
+    region_neighbor_frac: 0.125
+
+optim:
+  lr: 0.0005
+  weight_decay: 0.05
+  betas: [0.9, 0.95]
+  amp: bf16
+  accum_steps: 8
+  warmup_steps: 2000
+  max_steps: 20001
+  grad_clip: 1.0
+
+logging:
+  log_every: 100
+  val_every: 2000
+  ckpt_every: 1000
+  save_dir: runs/braincodes

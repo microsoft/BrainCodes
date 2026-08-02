@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "braincodes"
+version = "0.2.0"
+description = "Compact EEG foundation model over frozen BioCodec RVQ tokens"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "NOTICE.md"]
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.0",
+    "numpy>=1.23",
+    "scipy>=1.9",
+    "mne>=1.5",
+]
+
+# The BioCodec tokenizer is a separate install; see the README.
+# pip cannot resolve it from PyPI, so it is deliberately not listed here.
+
+[project.optional-dependencies]
+# Extra requirements for the pre-training recipe in training/.
+train = ["pyyaml>=6.0"]
+
+[tool.setuptools]
+packages = ["braincodes"]

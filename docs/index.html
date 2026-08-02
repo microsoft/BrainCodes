@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BrainCodes: Toward Lightweight EEG Foundation Models</title>
+<meta name="description" content="BrainCodes is a compact EEG foundation model built on frozen neural-codec tokens with factorized time/channel transformers.">
+
+<meta property="og:title" content="BrainCodes: Toward Lightweight EEG Foundation Models">
+<meta property="og:description" content="A compact EEG foundation model built on frozen neural-codec tokens.">
+<meta property="og:type" content="website">
+
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#abstract">Skip to content</a>
+
+<main id="top">
+
+  <!-- ───────────────────────── HERO ───────────────────────── -->
+  <section class="hero">
+    <canvas class="hero__canvas" id="token-canvas" aria-hidden="true"></canvas>
+    <div class="hero__veil" aria-hidden="true"></div>
+
+    <div class="hero__inner">
+      <p class="suptitle reveal">Microsoft Research</p>
+
+      <h1 class="hero__title reveal" style="--d:60ms">
+        <span class="hero__title-name">BrainCodes</span>
+        <span class="hero__title-rest">Toward Lightweight EEG Foundation Models</span>
+      </h1>
+
+      <ul class="authors reveal" style="--d:160ms">
+        <li>Kleanthis Avramidis<sup>1</sup></li>
+        <li>Dimitra Emmanouilidou<sup>2</sup></li>
+        <li>Ivan Tashev<sup>2</sup></li>
+      </ul>
+
+      <p class="affiliations reveal" style="--d:200ms">
+        <sup>1</sup>University of Southern California &nbsp;&middot;&nbsp; <sup>2</sup>Microsoft Research
+      </p>
+
+      <div class="actions reveal" style="--d:260ms">
+        <a class="btn" href="#" aria-label="Read the paper (PDF)">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M14 3v5h5"/></svg>
+          Paper
+        </a>
+        <a class="btn" href="https://github.com/microsoft/BrainCodes" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" aria-hidden="true" class="fill"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          Code
+        </a>
+        <a class="btn" href="#" target="_blank" rel="noopener" aria-label="Model weights on Hugging Face">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 10.5h.01M15.5 10.5h.01"/><path d="M8.6 14.4a4.2 4.2 0 0 0 6.8 0"/></svg>
+          Model
+        </a>
+        <a class="btn" href="#usage">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+          Get started
+        </a>
+        <a class="btn" href="#citation">
+          <svg viewBox="0 0 24 24" aria-hidden="true" class="fill"><path d="M9 7C6.8 8.2 5.5 10.2 5.5 12.8c0 2 1.2 3.4 3 3.4 1.6 0 2.8-1.1 2.8-2.7 0-1.5-1.1-2.6-2.6-2.6-.3 0-.6 0-.8.1.3-1.3 1.2-2.4 2.4-3.1Zm8 0c-2.2 1.2-3.5 3.2-3.5 5.8 0 2 1.2 3.4 3 3.4 1.6 0 2.8-1.1 2.8-2.7 0-1.5-1.1-2.6-2.6-2.6-.3 0-.6 0-.8.1.3-1.3 1.2-2.4 2.4-3.1Z"/></svg>
+          Cite
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── ABSTRACT ───────────────────────── -->
+  <section id="abstract" class="section">
+    <div class="wrap split">
+      <div class="split__main">
+        <h2 class="h2 reveal">At a Glance</h2>
+        <p class="lede reveal" style="--d:60ms">
+          BrainCodes is a compact foundation model for electroencephalography that operates entirely
+          over discrete tokens produced by BioCodec, a frozen neural audio-style codec of high
+          fidelity.
+        </p>
+        <p class="prose reveal" style="--d:100ms">
+          Each electrode is quantized independently into residual code streams, which a factorized
+          transformer processes by alternating attention over time and over channels. Electrode
+          identity enters only through rotary encodings of 3D coordinates, so a single set of
+          weights serves any montage without retraining. Pre-training combines masked-code
+          prediction with an auxiliary objective that localizes synthetic oscillatory bursts
+          injected into the signal, and an hourglass bottleneck compresses the sequence before it
+          is expanded again.
+        </p>
+      </div>
+
+      <div class="pillars reveal" style="--d:140ms">
+        <article class="pillar">
+          <h3>Discrete by design</h3>
+          <p>EEG is tokenized once by a frozen RVQ tokenizer.</p>
+        </article>
+        <article class="pillar">
+          <h3>Montage-agnostic</h3>
+          <p>Electrode ID enters through a function of 3D coordinates.</p>
+        </article>
+        <article class="pillar">
+          <h3>Small enough to matter</h3>
+          <p>A 1.9M-parameter backbone that does on-device inference.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── METHOD ───────────────────────── -->
+  <section id="method" class="section section--tint">
+    <div class="wrap">
+      <h2 class="h2 reveal">From electrodes to tokens to embeddings</h2>
+
+      <figure class="figure reveal" style="--d:100ms">
+        <div class="figure__placeholder">
+          <span>Figure 1 &mdash; architecture overview</span>
+          <em>drop <code>assets/img/architecture.svg</code> here</em>
+        </div>
+        <figcaption>
+          <b>Figure 1.</b> Placeholder caption describing the tokenizer, the interleaved
+          time/channel blocks, and the masked-code pretraining objective.
+        </figcaption>
+      </figure>
+
+      <div class="flow reveal" style="--d:140ms">
+        <div class="flow__step">
+          <h3>Raw EEG</h3>
+          <p><code>(B, C, T)</code> at 250&nbsp;Hz, band-pass filtered and montage-aligned on 3D coordinates.</p>
+        </div>
+        <div class="flow__arrow" aria-hidden="true"></div>
+        <div class="flow__step">
+          <h3>Tokenizer</h3>
+          <p>Per-channel RVQ codes <code>(B, C, T&#8202;', K)</code> from a frozen tokenizer of high fidelity.</p>
+        </div>
+        <div class="flow__arrow" aria-hidden="true"></div>
+        <div class="flow__step">
+          <h3>Backbone</h3>
+          <p>Factorized time and channel attention with coordinate-conditioned positions.</p>
+        </div>
+        <div class="flow__arrow" aria-hidden="true"></div>
+        <div class="flow__step">
+          <h3>Embeddings</h3>
+          <p>Token grid, channel-wise embeddings are fed to the downstream heads.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── RESULTS ───────────────────────── -->
+  <section id="results" class="section">
+    <div class="wrap">
+      <h2 class="h2 reveal">Downstream evaluation</h2>
+      <p class="prose prose--wide reveal" style="--d:100ms">
+        Placeholder. Summarize headline numbers here, then link to the full tables in the paper.
+      </p>
+
+      <div class="tablewrap reveal" style="--d:140ms" tabindex="0" role="region" aria-label="Downstream evaluation results">
+        <table class="table">
+          <caption><b>Table 1.</b> Placeholder results &mdash; balanced accuracy (mean over 3 seeds).</caption>
+          <thead>
+            <tr>
+              <th scope="col">Dataset</th>
+              <th scope="col">Task</th>
+              <th scope="col">Baseline A</th>
+              <th scope="col">Baseline B</th>
+              <th scope="col">Baseline C</th>
+              <th scope="col" class="is-ours">BrainCodes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Dataset I</th>   <td>4-class</td>  <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
+            <tr><th scope="row">Dataset II</th>  <td>Binary</td>   <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
+            <tr><th scope="row">Dataset III</th> <td>6-class</td>  <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
+            <tr><th scope="row">Dataset IV</th>  <td>Binary</td>   <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cards reveal" style="--d:180ms">
+        <article class="card">
+          <div class="card__media"><span>plot placeholder</span></div>
+          <h3>Scaling &amp; efficiency</h3>
+          <p>Placeholder caption for the compute-versus-accuracy figure.</p>
+        </article>
+        <article class="card">
+          <div class="card__media"><span>plot placeholder</span></div>
+          <h3>Robustness to noise</h3>
+          <p>Placeholder caption for the perturbation study.</p>
+        </article>
+        <article class="card">
+          <div class="card__media"><span>plot placeholder</span></div>
+          <h3>Montage transfer</h3>
+          <p>Placeholder caption for the cross-montage generalization result.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── USAGE ───────────────────────── -->
+  <section id="usage" class="section section--dark">
+    <div class="wrap">
+      <h2 class="h2 h2--light reveal">Three lines to an embedding</h2>
+      <p class="prose prose--light prose--single reveal" style="--d:100ms">
+        The released package ships pretrained weights and a minimal API. Full documentation lives in the associated <a href="https://github.com/microsoft/BrainCodes" target="_blank" rel="noopener">GitHub repository</a>.
+      </p>
+
+      <div class="codegrid reveal" style="--d:80ms">
+        <div class="code code--install">
+          <div class="code__bar">
+            <span class="code__label">install</span>
+            <button class="copy" type="button" data-copy="#code-install" aria-label="Copy installation commands">Copy</button>
+          </div>
+<pre id="code-install" tabindex="0" role="region" aria-label="Installation commands"><code><span class="c">git</span> clone https://github.com/microsoft/BrainCodes.git
+<span class="c">cd</span> BrainCodes <span class="o">&amp;&amp;</span> pip install -e .
+<span class="cm"># the frozen BioCodec tokenizer is a separate download</span>
+<span class="c">git</span> clone https://github.com/klean2050/BioCodec-release.git</code></pre>
+        </div>
+
+        <div class="code">
+          <div class="code__bar">
+            <span class="code__label">quickstart.py</span>
+            <button class="copy" type="button" data-copy="#code-quick" aria-label="Copy quickstart Python example">Copy</button>
+          </div>
+<pre id="code-quick" tabindex="0" role="region" aria-label="Quickstart Python example"><code><span class="k">import</span> torch
+<span class="k">from</span> braincodes <span class="k">import</span> BrainCodesModel
+
+ch_names <span class="o">=</span> [<span class="s">"TP9"</span>, <span class="s">"AF7"</span>, <span class="s">"AF8"</span>, <span class="s">"TP10"</span>]
+model <span class="o">=</span> BrainCodesModel<span class="o">.</span>from_pretrained(ch_names, device<span class="o">=</span><span class="s">"cuda"</span>)
+
+eeg <span class="o">=</span> torch<span class="o">.</span>randn(<span class="n">8</span>, <span class="n">4</span>, <span class="n">1000</span>)        <span class="cm"># (B, C, T) @ 250 Hz</span>
+emb <span class="o">=</span> model<span class="o">.</span>embed(eeg, pool<span class="o">=</span><span class="s">"channel"</span>)  <span class="cm"># (B, C*D)</span>
+
+clf <span class="o">=</span> model<span class="o">.</span>build_classifier(num_classes<span class="o">=</span><span class="n">4</span>, mode<span class="o">=</span><span class="s">"linear_probe"</span>)
+logits <span class="o">=</span> clf(model<span class="o">.</span>tokenize(eeg))</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── CITATION ───────────────────────── -->
+  <section id="citation" class="section">
+    <div class="wrap split">
+      <h2 class="h2 split__head reveal">Cite this study</h2>
+
+      <div class="code code--paper reveal" style="--d:100ms">
+        <div class="code__bar">
+          <span class="code__label">BibTeX</span>
+          <button class="copy" type="button" data-copy="#code-bib" aria-label="Copy BibTeX citation">Copy</button>
+        </div>
+<pre id="code-bib" tabindex="0" role="region" aria-label="BibTeX citation"><code>@article{braincodes2026,
+  title   = {BrainCodes: Toward Lightweight EEG Foundation Models},
+  author  = {Avramidis, Kleanthis and Emmanouilidou, Dimitra and Tashev, Ivan},
+  year    = {2026}
+}</code></pre>
+      </div>
+
+      <div class="notice reveal" style="--d:140ms">
+        <h3>Intended use disclosure</h3>
+        <p>
+          BrainCodes is released for neuroscientific research. It is not
+          intended to support clinical, diagnostic, or other high-impact decisions about
+          individuals. The release contains model parameters only; we make no formal privacy guarantee, and the
+          learned representations remain subject-discriminative.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <span class="footer__brand">BrainCodes</span>
+    <nav class="footer__links" aria-label="Footer">
+      <a href="#">Paper</a>
+      <a href="https://github.com/microsoft/BrainCodes" target="_blank" rel="noopener">Code</a>
+      <a href="#" target="_blank" rel="noopener">Model</a>
+      <a href="https://go.microsoft.com/fwlink/?LinkId=521839" target="_blank" rel="noopener">Privacy &amp; Cookies</a>
+    </nav>
+  </div>
+</footer>
+
+<p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

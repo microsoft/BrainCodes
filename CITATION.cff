@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "BrainCodes: Toward Lightweight EEG Foundation Models"
+abstract: >-
+  A compact EEG foundation model over frozen BioCodec residual-vector-quantized
+  tokens, with a factorized time/channel hourglass transformer and rotary
+  positional encoding over 3D electrode coordinates.
+authors:
+  - family-names: Avramidis
+    given-names: Kleanthis
+  - family-names: Emmanouilidou
+    given-names: Dimitra
+  - family-names: Tashev
+    given-names: Ivan
+repository-code: "https://github.com/microsoft/BrainCodes"
+license: MIT
+version: 0.2.0
+date-released: "2026-08-02"
+keywords:
+  - eeg
+  - foundation-model
+  - representation-learning
+  - neural-codec
+references:
+  - type: article
+    title: >-
+      An open resource for transdiagnostic research in pediatric mental health
+      and learning disorders
+    authors:
+      - family-names: Alexander
+        given-names: Lindsay M.
+    journal: "Scientific Data"
+    volume: 4
+    year: 2017
+    doi: 10.1038/sdata.2017.181
