@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Classification head + fine-tuning utilities for the BrainCodes backbone.
 
 Two training modes:
