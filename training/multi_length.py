@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Variable-length wrapper for ``HBNCachedDataset``.
 
 The cache is built once at the longest length; each batch samples one length
