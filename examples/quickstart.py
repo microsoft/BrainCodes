@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Minimal end-to-end example: embeddings + a linear probe.
 
 Requires the BioCodec tokenizer checkpoint (see the README). Run from the repo
