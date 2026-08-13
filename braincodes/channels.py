@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Channel-coordinate resolution via MNE standard montages."""
 
 from __future__ import annotations
