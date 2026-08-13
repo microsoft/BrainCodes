@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Pre-training losses: masked token-CE plus the injection auxiliaries."""
 
 from __future__ import annotations
