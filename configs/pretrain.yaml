@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 tokenizer:
   ckpt_path: null          # null -> $BIOCODEC_CKPT
   sample_rate: 250
