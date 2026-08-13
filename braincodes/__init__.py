@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """BrainCodes — a compact EEG foundation model over frozen BioCodec RVQ tokens.
 
 Public API:
