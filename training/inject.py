@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Injected-oscillation pretext.
 
 Transient narrowband bursts (band-pass-filtered noise centred at ``f``, width
