@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """HBN-EEG dataset over pre-tokenized ``.npz`` shards from ``preprocess.py``.
 
 Each shard (one recording) holds:
