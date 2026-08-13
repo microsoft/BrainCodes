@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """HuggingFace-style input preprocessor for raw EEG.
 
 Turns arbitrary raw EEG into the exact tensor BrainCodes expects:
