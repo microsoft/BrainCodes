@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Offline preprocessing for HBN-EEG -> cached ``.npz`` shards for BrainCodes.
 
 Per recording: load EEGLAB ``.set``, pick EEG channels, band-pass 0.5-100 Hz,
