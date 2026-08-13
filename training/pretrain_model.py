@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """Pre-training wrapper around the released :class:`BrainCodes` backbone.
 
 Masking, the masked-code heads and the injection auxiliaries live here so that
