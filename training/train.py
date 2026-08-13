@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """BrainCodes pre-training.
 
 python -m training.train --config configs/pretrain.yaml
