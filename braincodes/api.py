@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """High-level API for the BrainCodes EEG foundation model.
 
 Typical usage::
