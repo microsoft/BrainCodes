@@ -1,3 +1,5 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT license.
 """BrainCodes encoder over frozen BioCodec RVQ tokens.
 
 ``BioCodecTokenizer`` codes EEG per channel ``(B,C,t)->(B,C,T_tok,K)``; ``BrainCodes``
