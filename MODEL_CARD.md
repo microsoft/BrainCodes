@@ -91,7 +91,7 @@ has no regulatory clearance.
   tokenized like any other signal.
 - Evaluation to date is on a limited set of public benchmarks; results have not been audited for
   fairness across demographic subgroups.
-- Embeddings retain subject-identifying structure and should not be shared as if they were
+- Embeddings may retain subject-identifying structure and should not be shared as if they were
   anonymized.
 
 ## Evaluation
