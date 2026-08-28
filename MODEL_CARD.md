@@ -1,6 +1,6 @@
 ---
 license: mit
-license_link: LICENSE
+license_link: https://github.com/microsoft/BrainCodes/blob/main/LICENSE
 library_name: braincodes
 pipeline_tag: feature-extraction
 tags:
