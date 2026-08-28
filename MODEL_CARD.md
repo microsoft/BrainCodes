@@ -4,11 +4,11 @@ license_link: LICENSE
 library_name: braincodes
 pipeline_tag: feature-extraction
 tags:
-	- eeg
-	- biosignals
-	- foundation-model
-	- representation-learning
-	- neural-codec
+  - eeg
+  - biosignals
+  - foundation-model
+  - representation-learning
+  - neural-codec
 ---
 
 # BrainCodes: Toward Lightweight EEG Foundation Models
