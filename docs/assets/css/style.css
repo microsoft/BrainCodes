@@ -34,6 +34,8 @@
   --lilac:     #9147ff;
   --lilac-lit: #b578ff;
   --grad: linear-gradient(100deg, var(--blue) 0%, var(--cyan) 48%, var(--lilac) 100%);
+  /* two-tone variant for everything outside the hero title */
+  --grad-bc: linear-gradient(100deg, var(--blue) 0%, var(--cyan) 100%);
 
   /* type */
   --sans: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", "Selawik",
@@ -83,7 +85,7 @@ a {
 }
 
 a:hover {
-  color: var(--lilac);
+  color: var(--blue-deep);
 }
 
 ::selection {
@@ -152,7 +154,7 @@ a:hover {
 .section--dark {
   background:
     radial-gradient(900px 460px at 12% -20%, rgba(43, 92, 255, .34), transparent 62%),
-    radial-gradient(760px 420px at 88% 110%, rgba(145, 71, 255, .30), transparent 62%),
+    radial-gradient(760px 420px at 88% 110%, rgba(0, 201, 214, .22), transparent 62%),
     #0c0e24;
   color: #e9ecf8;
 }
@@ -319,7 +321,7 @@ a:hover {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--grad);
+  background: var(--grad-bc);
   opacity: 0;
   transition: opacity .25s var(--ease);
 }
@@ -388,7 +390,7 @@ a:hover {
 }
 
 .prose--wide {
-  max-width: 78ch;
+  max-width: none;
 }
 
 .prose--single {
@@ -409,7 +411,7 @@ a:hover {
 }
 
 .prose--light a:hover {
-  color: var(--lilac-lit);
+  color: #8fb0ff;
 }
 
 
@@ -439,7 +441,7 @@ a:hover {
   position: absolute;
   inset: 0 0 auto 0;
   height: 3px;
-  background: var(--grad);
+  background: var(--grad-bc);
   opacity: 0;
   transition: opacity .3s var(--ease);
 }
@@ -470,46 +472,21 @@ a:hover {
 /* 8.2 Figure */
 
 .figure {
-  margin: 0 0 26px;
+  max-width: 960px;
+  margin: 0 auto 30px;
 }
 
-.figure__placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  aspect-ratio: 16 / 6;
-  border: 1px dashed rgba(43, 92, 255, .30);
+.figure__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: clamp(10px, 2.5vw, 28px);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  color: var(--ink-faint);
-  background:
-    linear-gradient(#fff, #fff) padding-box,
-    repeating-linear-gradient(45deg, rgba(43, 92, 255, .05) 0 12px, transparent 12px 24px);
-}
-
-.figure__placeholder span {
-  color: var(--ink-soft);
-  font-family: var(--display);
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-
-.figure__placeholder em {
-  font-size: .82rem;
-  font-style: normal;
-}
-
-.figure__placeholder code {
-  padding: 2px 6px;
-  border-radius: 5px;
-  background: var(--paper-warm);
-  font-family: var(--mono);
-  font-size: .8em;
+  background: #fff;
 }
 
 figcaption {
-  max-width: 76ch;
   margin-top: 10px;
   color: var(--ink-faint);
   font-size: .86rem;
@@ -547,7 +524,7 @@ figcaption b {
   position: absolute;
   inset: 0 0 auto 0;
   height: 3px;
-  background: var(--grad);
+  background: var(--grad-bc);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform .35s var(--ease);
@@ -598,7 +575,7 @@ figcaption b {
   width: 26px;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, rgba(43, 92, 255, .55), rgba(145, 71, 255, .55));
+  background: linear-gradient(90deg, rgba(43, 92, 255, .55), rgba(0, 201, 214, .7));
 }
 
 .flow__arrow::after {
@@ -608,8 +585,8 @@ figcaption b {
   right: -1px;
   width: 7px;
   height: 7px;
-  border-top: 2px solid rgba(145, 71, 255, .7);
-  border-right: 2px solid rgba(145, 71, 255, .7);
+  border-top: 2px solid rgba(0, 170, 182, .8);
+  border-right: 2px solid rgba(0, 170, 182, .8);
   border-radius: 1px;
   transform: translateY(-50%) rotate(45deg);
 }
@@ -640,7 +617,7 @@ figcaption b {
 
 .table th,
 .table td {
-  padding: 12px 18px;
+  padding: 12px 14px;
   text-align: left;
 }
 
@@ -677,52 +654,28 @@ figcaption b {
   color: var(--blue);
 }
 
-/* 8.5 Cards */
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 22px;
+/* every column but the row labels is numeric, so center it */
+.table td,
+.table thead th:not(:first-child) {
+  text-align: center;
 }
 
-.card {
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+/* summary column: cyan tint, kept distinct from the blue "ours" row */
+.table .is-avg {
+  background: rgba(0, 201, 214, .10);
+  color: #00727a;
 }
 
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(20, 21, 46, .09);
+.table thead .is-avg {
+  color: #00939c;
 }
 
-.card__media {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 4 / 3;
-  border-bottom: 1px solid var(--line);
-  color: var(--ink-faint);
-  font-size: .82rem;
-  background:
-    repeating-linear-gradient(45deg, rgba(145, 71, 255, .06) 0 10px, transparent 10px 20px),
-    var(--paper-warm);
+.table .is-ours.is-avg {
+  background: rgba(0, 201, 214, .20);
 }
 
-.card h3 {
-  margin: 16px 18px 5px;
-  font-family: var(--display);
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -.015em;
-}
-
-.card p {
-  margin: 0 18px 17px;
-  color: var(--ink-faint);
-  font-size: .86rem;
+.tablewrap + .prose {
+  margin-top: 20px;
 }
 
 /* 8.6 Code blocks */
@@ -780,7 +733,7 @@ figcaption b {
 /* syntax tokens */
 .code .k  { color: #6ee7e0; }
 .code .c  { color: #8fb0ff; }
-.code .s  { color: #f0b6ff; }
+.code .s  { color: #a6e3a1; }
 .code .n  { color: #ffc98a; }
 .code .o  { color: #8d97bd; }
 .code .cm { color: #7c87b2; font-style: italic; }
@@ -819,7 +772,7 @@ figcaption b {
   border-radius: 10px;
   background:
     linear-gradient(#fff, #fff) padding-box,
-    var(--grad) border-box;
+    var(--grad-bc) border-box;
 }
 
 .split > .notice {
@@ -919,25 +872,36 @@ figcaption b {
     gap: 20px;
   }
 
-  .cards,
-  .codegrid,
-  .flow {
+  .codegrid {
     grid-template-columns: 1fr;
   }
 
+  /* two-by-two grid of steps; the in-row arrows no longer point anywhere */
   .flow {
-    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .flow__arrow {
+    display: none;
   }
 
   .prose--single {
     white-space: normal;
   }
+}
+
+@media (max-width: 560px) {
+  .flow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 
   .flow__arrow {
+    display: block;
     justify-self: center;
     width: 2px;
     height: 16px;
-    background: linear-gradient(180deg, rgba(43, 92, 255, .55), rgba(145, 71, 255, .55));
+    background: linear-gradient(180deg, rgba(43, 92, 255, .55), rgba(0, 201, 214, .7));
   }
 
   .flow__arrow::after {

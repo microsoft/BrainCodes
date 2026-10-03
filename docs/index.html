@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BrainCodes: Toward Lightweight EEG Foundation Models</title>
-<meta name="description" content="BrainCodes is a compact EEG foundation model built on frozen neural-codec tokens with factorized time/channel transformers.">
+<title>BrainCodes: A Lightweight EEG Foundation Model over Discrete Neural Codes</title>
+<meta name="description" content="BrainCodes is a 1.9M-parameter EEG foundation model trained over discrete BioCodec tokens. It works with any electrode montage and matches or surpasses much larger models across 14 benchmarks.">
 
-<meta property="og:title" content="BrainCodes: Toward Lightweight EEG Foundation Models">
-<meta property="og:description" content="A compact EEG foundation model built on frozen neural-codec tokens.">
+<meta property="og:title" content="BrainCodes: A Lightweight EEG Foundation Model over Discrete Neural Codes">
+<meta property="og:description" content="A 1.9M-parameter EEG foundation model over discrete neural codes that works with any electrode montage, down to four-channel wearables.">
 <meta property="og:type" content="website">
 
 <link rel="stylesheet" href="assets/css/style.css">
@@ -24,17 +24,16 @@
     <div class="hero__veil" aria-hidden="true"></div>
 
     <div class="hero__inner">
-      <p class="suptitle reveal">Microsoft Research</p>
 
       <h1 class="hero__title reveal" style="--d:60ms">
         <span class="hero__title-name">BrainCodes</span>
-        <span class="hero__title-rest">Toward Lightweight EEG Foundation Models</span>
+        <span class="hero__title-rest">A Lightweight EEG Foundation Model over Discrete Neural Codes</span>
       </h1>
 
       <ul class="authors reveal" style="--d:160ms">
         <li>Kleanthis Avramidis<sup>1</sup></li>
-        <li>Dimitra Emmanouilidou<sup>2</sup></li>
         <li>Ivan Tashev<sup>2</sup></li>
+        <li>Dimitra Emmanouilidou<sup>2</sup></li>
       </ul>
 
       <p class="affiliations reveal" style="--d:200ms">
@@ -50,7 +49,7 @@
           <svg viewBox="0 0 16 16" aria-hidden="true" class="fill"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
           Code
         </a>
-        <a class="btn" href="#" target="_blank" rel="noopener" aria-label="Model weights on Hugging Face">
+        <a class="btn" href="https://github.com/microsoft/BrainCodes/tree/main/weights" target="_blank" rel="noopener" aria-label="Pretrained model weights">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8.5 10.5h.01M15.5 10.5h.01"/><path d="M8.6 14.4a4.2 4.2 0 0 0 6.8 0"/></svg>
           Model
         </a>
@@ -72,33 +71,34 @@
       <div class="split__main">
         <h2 class="h2 reveal">At a Glance</h2>
         <p class="lede reveal" style="--d:60ms">
-          BrainCodes is a compact foundation model for electroencephalography that operates entirely
-          over discrete tokens produced by BioCodec, a frozen neural audio-style codec of high
-          fidelity.
+          BrainCodes is a lightweight EEG foundation model with 1.9M trainable parameters,
+          pretrained through self-supervised learning on more than 800 hours of EEG recordings from
+          over 1,000 participants.
         </p>
         <p class="prose reveal" style="--d:100ms">
-          Each electrode is quantized independently into residual code streams, which a factorized
-          transformer processes by alternating attention over time and over channels. Electrode
-          identity enters only through rotary encodings of 3D coordinates, so a single set of
-          weights serves any montage without retraining. Pre-training combines masked-code
-          prediction with an auxiliary objective that localizes synthetic oscillatory bursts
-          injected into the signal, and an hourglass bottleneck compresses the sequence before it
-          is expanded again.
+          Most EEG foundation models are pretrained to reconstruct masked signal patches. Under a
+          squared-error loss, high-power broadband activity dominates the objective, and a masked
+          channel can largely be recovered by interpolating its neighbors, so a model can fit the
+          signal well without retaining its rhythms or spatial structure. BrainCodes instead
+          predicts the discrete codes of a frozen vector-quantized tokenizer, encodes relative
+          electrode positions directly in channel attention, and adds an auxiliary objective that
+          localizes synthetic oscillatory bursts. It matches or surpasses the state of the art
+          across 14 benchmarks and transfers to consumer wearable devices.
         </p>
       </div>
 
       <div class="pillars reveal" style="--d:140ms">
         <article class="pillar">
           <h3>Discrete by design</h3>
-          <p>EEG is tokenized once by a frozen RVQ tokenizer.</p>
+          <p>Each channel is tokenized by a VQ-based tokenizer, so the model predicts code indices instead of waveform power.</p>
         </article>
         <article class="pillar">
           <h3>Montage-agnostic</h3>
-          <p>Electrode ID enters through a function of 3D coordinates.</p>
+          <p>Electrodes are modeled through rotary encodings of their 3D relative positions, so they are agnostic to the utilized layout.</p>
         </article>
         <article class="pillar">
-          <h3>Small enough to matter</h3>
-          <p>A 1.9M-parameter backbone that does on-device inference.</p>
+          <h3>Scaled down to 1.9M</h3>
+          <p>A tuned lightweight backbone matches or surpasses the state of the art across 14 different performance benchmarks.</p>
         </article>
       </div>
     </div>
@@ -110,35 +110,35 @@
       <h2 class="h2 reveal">From electrodes to tokens to embeddings</h2>
 
       <figure class="figure reveal" style="--d:100ms">
-        <div class="figure__placeholder">
-          <span>Figure 1 &mdash; architecture overview</span>
-          <em>drop <code>assets/img/architecture.svg</code> here</em>
-        </div>
+        <img class="figure__img" src="assets/img/architecture.png" width="2416" height="1640" loading="lazy"
+             alt="BrainCodes pretraining. Input EEG is either tokenized by BioCodec and block-masked, or injected with a narrowband burst over a region of electrodes and then tokenized. Both token grids pass through a shared U-Net of factorized transformer blocks that attend over time and over channels, compressing time to T/2 and T/4. The masked branch predicts the missing codes; the perturbed branch reads the bottleneck to predict the burst's frequency, duration and location.">
         <figcaption>
-          <b>Figure 1.</b> Placeholder caption describing the tokenizer, the interleaved
-          time/channel blocks, and the masked-code pretraining objective.
+          <b>Figure 1.</b> <b>A)</b> Contiguous blocks of
+          codes are masked and the model predicts the missing indices, evaluated through mean
+          cross-entropy over the masked positions (<i>L</i><sub>tok</sub>). <b>B)</b> Narrowband
+          bursts are injected into regions of electrodes and the bottleneck is read by 3 different linear heads (<i>L</i><sub>osc</sub>).
         </figcaption>
       </figure>
 
       <div class="flow reveal" style="--d:140ms">
         <div class="flow__step">
           <h3>Raw EEG</h3>
-          <p><code>(B, C, T)</code> at 250&nbsp;Hz, band-pass filtered and montage-aligned on 3D coordinates.</p>
+          <p><code>(B, C, T)</code> at 250&nbsp;Hz, from any number of channels with provided 3D coordinates.</p>
         </div>
         <div class="flow__arrow" aria-hidden="true"></div>
         <div class="flow__step">
           <h3>Tokenizer</h3>
-          <p>Per-channel RVQ codes <code>(B, C, T&#8202;', K)</code> from a frozen tokenizer of high fidelity.</p>
+          <p>Frozen BioCodec: 6 RVQ codes per channel, resulting in a 128D input embedding.</p>
         </div>
         <div class="flow__arrow" aria-hidden="true"></div>
         <div class="flow__step">
           <h3>Backbone</h3>
-          <p>Factorized time and channel attention with coordinate-conditioned positions.</p>
+          <p>A 3-layer, factorized time-channel U-Net with 3D rotary channel encoding.</p>
         </div>
         <div class="flow__arrow" aria-hidden="true"></div>
         <div class="flow__step">
           <h3>Embeddings</h3>
-          <p>Token grid, channel-wise embeddings are fed to the downstream heads.</p>
+          <p>Per-channel bottleneck features for probing downstream evaluation.</p>
         </div>
       </div>
     </div>
@@ -148,48 +148,32 @@
   <section id="results" class="section">
     <div class="wrap">
       <h2 class="h2 reveal">Downstream evaluation</h2>
-      <p class="prose prose--wide reveal" style="--d:100ms">
-        Placeholder. Summarize headline numbers here, then link to the full tables in the paper.
-      </p>
 
       <div class="tablewrap reveal" style="--d:140ms" tabindex="0" role="region" aria-label="Downstream evaluation results">
         <table class="table">
-          <caption><b>Table 1.</b> Placeholder results &mdash; balanced accuracy (mean over 3 seeds).</caption>
+          <caption><b>Table 1.</b> Balanced accuracy (BAC) on the main benchmark under full fine-tuning, mean over 3 seeds. Mean nBAC is the chance-normalized mean over the seven datasets.</caption>
           <thead>
             <tr>
-              <th scope="col">Dataset</th>
-              <th scope="col">Task</th>
-              <th scope="col">Baseline A</th>
-              <th scope="col">Baseline B</th>
-              <th scope="col">Baseline C</th>
-              <th scope="col" class="is-ours">BrainCodes</th>
+              <th scope="col">Model</th>
+              <th scope="col">Params</th>
+              <th scope="col">TUAB</th>
+              <th scope="col">TUEV</th>
+              <th scope="col">ISRUC</th>
+              <th scope="col">Siena</th>
+              <th scope="col">Phy-MI</th>
+              <th scope="col">BCI IV-2a</th>
+              <th scope="col">EEGMAT</th>
+              <th scope="col" class="is-avg">Mean nBAC</th>
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Dataset I</th>   <td>4-class</td>  <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
-            <tr><th scope="row">Dataset II</th>  <td>Binary</td>   <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
-            <tr><th scope="row">Dataset III</th> <td>6-class</td>  <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
-            <tr><th scope="row">Dataset IV</th>  <td>Binary</td>   <td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td class="is-ours"><b>&mdash;</b></td></tr>
+            <tr><th scope="row">BIOT</th><td>3.2M</td><td>0.796</td><td>0.528</td><td>0.753</td><td>0.735</td><td>0.615</td><td>0.475</td><td>0.688</td><td class="is-avg">0.478</td></tr>
+            <tr><th scope="row">LaBraM-Base</th><td>5.8M</td><td>0.814</td><td>0.641</td><td>0.763</td><td>0.708</td><td>0.617</td><td>0.487</td><td>0.691</td><td class="is-avg">0.501</td></tr>
+            <tr><th scope="row">CBraMod</th><td>4.0M</td><td>0.829</td><td>0.667</td><td>0.787</td><td>0.732</td><td>0.642</td><td>0.514</td><td>0.726</td><td class="is-avg">0.540</td></tr>
+            <tr><th scope="row">REVE-Base</th><td>69M</td><td><b>0.832</b></td><td>0.676</td><td>0.782</td><td>0.740</td><td>0.648</td><td><b>0.640</b></td><td>0.766</td><td class="is-avg">0.581</td></tr>
+            <tr><th scope="row" class="is-ours">BrainCodes</th><td class="is-ours">1.9M</td><td class="is-ours">0.811</td><td class="is-ours"><b>0.690</b></td><td class="is-ours"><b>0.796</b></td><td class="is-ours"><b>0.827</b></td><td class="is-ours"><b>0.664</b></td><td class="is-ours">0.639</td><td class="is-ours"><b>0.772</b></td><td class="is-ours is-avg"><b>0.609</b></td></tr>
           </tbody>
         </table>
-      </div>
-
-      <div class="cards reveal" style="--d:180ms">
-        <article class="card">
-          <div class="card__media"><span>plot placeholder</span></div>
-          <h3>Scaling &amp; efficiency</h3>
-          <p>Placeholder caption for the compute-versus-accuracy figure.</p>
-        </article>
-        <article class="card">
-          <div class="card__media"><span>plot placeholder</span></div>
-          <h3>Robustness to noise</h3>
-          <p>Placeholder caption for the perturbation study.</p>
-        </article>
-        <article class="card">
-          <div class="card__media"><span>plot placeholder</span></div>
-          <h3>Montage transfer</h3>
-          <p>Placeholder caption for the cross-montage generalization result.</p>
-        </article>
       </div>
     </div>
   </section>
@@ -246,7 +230,7 @@ logits <span class="o">=</span> clf(model<span class="o">.</span>tokenize(eeg))<
           <button class="copy" type="button" data-copy="#code-bib" aria-label="Copy BibTeX citation">Copy</button>
         </div>
 <pre id="code-bib" tabindex="0" role="region" aria-label="BibTeX citation"><code>@article{braincodes2026,
-  title   = {BrainCodes: Toward Lightweight EEG Foundation Models},
+  title   = {BrainCodes: A Lightweight EEG Foundation Model over Discrete Neural Codes},
   author  = {Avramidis, Kleanthis and Emmanouilidou, Dimitra and Tashev, Ivan},
   year    = {2026}
 }</code></pre>
@@ -255,10 +239,9 @@ logits <span class="o">=</span> clf(model<span class="o">.</span>tokenize(eeg))<
       <div class="notice reveal" style="--d:140ms">
         <h3>Intended use disclosure</h3>
         <p>
-          BrainCodes is released for neuroscientific research. It is not
+          BrainCodes is hereby released for neuroscientific research. It is not
           intended to support clinical, diagnostic, or other high-impact decisions about
-          individuals. The release contains model parameters only; we make no formal privacy guarantee, and the
-          learned representations remain subject-discriminative.
+          individuals. The present release includes model parameters only, and no guidance or implementation for a specific downstream task.
         </p>
       </div>
     </div>
