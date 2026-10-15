@@ -1,6 +1,6 @@
 # BrainCodes
 
-A compact EEG foundation model that is composed of a [BioCodec](https://arxiv.org/abs/2510.09095) tokenizer and a series of factorized time/channel transformer layers with rotary channel positional encoding. BrainCodes is pretrained with a masked-code objective on [HBN-EEG](https://neuromechanist.github.io/data/hbn/) releases. This package ships the pretrained weights plus a minimal usage API.
+A compact EEG foundation model that is composed of a [BioCodec](https://arxiv.org/abs/2510.09095) tokenizer and a series of factorized time/channel transformer layers with rotary channel positional encoding. BrainCodes is pretrained with a masked-code objective on [HBN-EEG](https://neuromechanist.github.io/data/hbn/) releases. This package ships the pretrained weights plus a usage API.
 
 The backbone is montage-agnostic: channel positions enter through a learned function of 3D electrode coordinates, so you can use any layout (preferably within 10-05) without retraining the encoding.
 
@@ -13,7 +13,7 @@ cd BrainCodes && pip install -e .
 
 ### BioCodec tokenizer
 
-BrainCodes operates on discrete codes produced by a **frozen BioCodec** tokenizer, which is released separately. Clone it and install its requirements:
+BrainCodes operates on discrete codes produced by a **frozen BioCodec** tokenizer, which is released separately:
 
 ```bash
 git clone https://github.com/klean2050/BioCodec-release.git
@@ -136,7 +136,7 @@ pre = EEGPreprocessor(
 
 ## Pre-training
 
-The full pre-training recipe is included. `configs/pretrain.yaml` is the configuration that produced `weights/braincodes.pt`. The training code is not part of the installed package; run it from the repo root after installing its extra requirement:
+`configs/pretrain.yaml` is the configuration that produced `weights/braincodes.pt`. The training code is not part of the installed package; run it from the repo root after installing its extra requirement:
 
 ```bash
 pip install -e ".[train]"
