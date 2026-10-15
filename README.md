@@ -1,12 +1,8 @@
 # BrainCodes
 
-A compact (1.9M parameters) EEG foundation model that is composed of a [BioCodec](https://arxiv.org/abs/2510.09095) tokenizer and a series of factorized
-time/channel transformer layers arranged as an hourglass, with rotary channel
-positional encoding. It is pretrained with a masked-code objective on [HBN-EEG](https://neuromechanist.github.io/data/hbn/) releases R3, R4, R7 and R8 (1131 participants). This package ships the pretrained weights plus a minimal usage API.
+A compact EEG foundation model that is composed of a [BioCodec](https://arxiv.org/abs/2510.09095) tokenizer and a series of factorized time/channel transformer layers with rotary channel positional encoding. BrainCodes is pretrained with a masked-code objective on [HBN-EEG](https://neuromechanist.github.io/data/hbn/) releases. This package ships the pretrained weights plus a minimal usage API.
 
-The backbone is **montage-agnostic**: channel positions enter through a learned
-function of 3D electrode coordinates, so you can use any subset/layout of
-electrodes (preferably within 10-05) without retraining the encoding.
+The backbone is montage-agnostic: channel positions enter through a learned function of 3D electrode coordinates, so you can use any layout (preferably within 10-05) without retraining the encoding.
 
 ## Install
 
@@ -15,11 +11,9 @@ git clone https://github.com/microsoft/BrainCodes.git
 cd BrainCodes && pip install -e .
 ```
 
-### BioCodec tokenizer (required)
+### BioCodec tokenizer
 
-BrainCodes operates on discrete codes produced by a **frozen BioCodec** RVQ
-tokenizer, which is released separately and is *not* vendored here. Clone it and
-install its requirements:
+BrainCodes operates on discrete codes produced by a **frozen BioCodec** tokenizer, which is released separately. Clone it and install its requirements:
 
 ```bash
 git clone https://github.com/klean2050/BioCodec-release.git
@@ -28,17 +22,13 @@ export PYTHONPATH=$PWD/BioCodec-release:$PYTHONPATH
 export BIOCODEC_CKPT=$PWD/BioCodec-release/biocodec_ckpt.pt
 ```
 
-The released checkpoint `biocodec_ckpt.pt` ships with that repository, so the clone
-is all you need.
+The released EEG checkpoint `biocodec_ckpt.pt` ships with that repository.
 
 `BIOCODEC_CKPT` is read automatically; alternatively pass the path explicitly:
 
 ```python
 model = BrainCodesModel.from_pretrained(ch_names, codec_ckpt="/path/to/biocodec_ckpt.pt")
 ```
-
-The checkpoint is mandatory — without it loading raises rather than silently
-falling back to an untrained tokenizer.
 
 ## Quickstart
 
@@ -72,10 +62,7 @@ model = BrainCodesModel.from_pretrained(
     ch_names, weights=None, codec_ckpt=None, device="cpu", montage="standard_1005"
 )
 ```
-Loads the pretrained weights and binds them to the montage of `ch_names`.
-The architecture is read from the checkpoint, so weights stay loadable across
-package versions. `codec_ckpt` defaults to `$BIOCODEC_CKPT`.
-Create one instance per montage. Then you can use the loaded model to perform either of the following:
+Loads the pretrained weights and binds them to the montage of `ch_names`. The architecture is read from the checkpoint, so that weights stay loadable across package versions. `codec_ckpt` defaults to `$BIOCODEC_CKPT`. Create one instance per montage. Then you can use the loaded model to perform either of the following:
 
 ```python
 codes = model.tokenize(eeg, normalize=True)    # (B, C, T_tok, K)
@@ -94,11 +81,7 @@ embeddings = model.embed(eeg, normalize=True, pool="channel")
 | `"none"`    | `(B, C, T_b, D)`  | full bottleneck grid |
 | `"tokens"`  | `(B, C, T_tok, D)`| full-resolution decoder output |
 
-The first three read the **bottleneck** — the deepest, most time-compressed
-encoder representation. This is the tap used for every reported BrainCodes
-result. `"tokens"` is the decoder output, which is optimized to reconstruct
-codes and therefore retains detail that downstream classifiers generally do not
-need; it is exposed for analysis, not recommended as a default.
+The first three read the deepest, most time-compressed representation. This is the tap used for every reported BrainCodes result. `"tokens"` is the decoder output.
 
 ```python
 clf = model.build_classifier(
@@ -121,12 +104,7 @@ Both heads read the bottleneck:
 | `channel_time_flat_bottleneck_noproj`   | flattened bottleneck → linear (strictly linear) |
 
 `n_times` (samples per window) is required for the `noproj` head, whose input
-size depends on window length.
-
-The returned module consumes **tokenized codes**: call `clf(model.tokenize(eeg))`.
-Under `linear_probe` the backbone is kept in eval mode even if you call
-`clf.train()`, so its dropout stays off and the head is fit on exactly the
-features it is evaluated on.
+size depends on window length. The returned module consumes tokenized codes, so you have to call `clf(model.tokenize(eeg))`.
 
 ## EEG Preprocessing
 
@@ -158,11 +136,7 @@ pre = EEGPreprocessor(
 
 ## Pre-training
 
-The full pre-training recipe is included. `configs/pretrain.yaml` is, value for
-value, the configuration that produced `weights/braincodes.pt`.
-
-The training code is not part of the installed package; run it from the repo
-root after installing its extra requirement:
+The full pre-training recipe is included. `configs/pretrain.yaml` is the configuration that produced `weights/braincodes.pt`. The training code is not part of the installed package; run it from the repo root after installing its extra requirement:
 
 ```bash
 pip install -e ".[train]"
@@ -182,23 +156,13 @@ python -m training.train --config configs/pretrain.yaml
 python -m training.train --selftest
 ```
 
-The released checkpoint is 20k steps on HBN-EEG releases R3, R4, R7 and R8
-(4x A6000, ~2.75 h per 1k steps). The objective is masked-code reconstruction
-with contiguous spatio-temporal spans, plus an oscillation-injection auxiliary
-that predicts the frequency, duration and location of synthetic bursts.
-
-Training-only machinery (masking, the masked-code heads, the injection
-auxiliaries) lives in `training/pretrain_model.py` as a subclass, so the
-released inference path in `braincodes/` carries no training state. Export an
-inference checkpoint from a pre-training checkpoint with:
+The released checkpoint is 20k steps on HBN-EEG releases R3, R4, R7 and R8. Training-only code is provided in `training/pretrain_model.py`. You can export an inference checkpoint from a pre-training checkpoint with:
 
 ```python
 model.export_release_weights("weights/braincodes.pt", step=20000)
 ```
 
-The cached shards hold only signal and electrode coordinates. Participant
-identifiers stay in `manifest.json`, where they are needed for the leak-free
-subject-level split; demographics and phenotype scores are never read or written.
+The cached shards hold only signal and electrode coordinates. Participant identifiers stay in `manifest.json`; demographics and phenotype scores are never read or written.
 
 ## Structure
 
@@ -227,8 +191,6 @@ weights/
     braincodes.pt   pretrained encoder weights (1.9M params, 7.2 MB)
 ```
 
-The BioCodec tokenizer is **not** included; see [Install](#biocodec-tokenizer-required).
-
 ## Privacy
 
 This package does not collect, transmit, or store any data. All processing is local.
@@ -249,8 +211,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). This project has adopted the
 ## Citation
 
 See [CITATION.cff](CITATION.cff). Please cite BrainCodes together with the Healthy Brain
-Network datasets it was pretrained on — see [NOTICE.md](NOTICE.md) for the required
-attributions.
+Network dataset. See [NOTICE.md](NOTICE.md) for the required attributions.
 
 ## License
 
